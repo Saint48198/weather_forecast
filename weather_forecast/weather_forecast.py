@@ -13,20 +13,17 @@ class WeatherForecast:
     MONTH = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
     def __init__(self, location):
-        if(location):
+        if location:
             self.location = str(location)
-
-            geolocator = Nominatim()
-            geo_location = geolocator.geocode(self.location)
-
-            # get longitude and latitude
-            self.latitude = geo_location.latitude
-            self.longitude = geo_location.longitude
-
-            WeatherForecast.get_weather_forecast(self)
         else:
             self.location = input('Enter your location (Example: Ann Arbor, MI US or London, UK\n')
-            WeatherForecast(self.location)
+
+        geolocator = Nominatim()
+        geo_location = geolocator.geocode(self.location)
+
+        # get longitude and latitude
+        self.latitude = geo_location.latitude
+        self.longitude = geo_location.longitude
 
     def get_date_list(self):
         # build the date list
@@ -71,7 +68,9 @@ class WeatherForecast:
             array_index += 1
 
 #testing
-#WeatherForecast(48198)
-WeatherForecast("Ann Arbor, MI")
+#location0 = WeatherForecast("London, UK")
+#print(location0.latitude)
+#print(location0.longitude)
+#WeatherForecast("Ann Arbor, MI")
 #WeatherForecast("London") # still fails
 #WeatherForecast()
