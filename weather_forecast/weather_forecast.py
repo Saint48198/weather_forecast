@@ -27,6 +27,9 @@ class WeatherForecast:
         self.latitude = geo_location.latitude
         self.longitude = geo_location.longitude
 
+         # build the date list
+        self.date_list = WeatherForecast.get_date_list(self)
+
     def get_date_list(self):
         # build the date list
         start_day = datetime.datetime.today() #+ datetime.timedelta(days=1)
@@ -54,14 +57,12 @@ class WeatherForecast:
     def print_to_console(self, forecast):
         print(self.location + '(latitude: ' + str(self.latitude) + ' longitude: ' + str(self.longitude) + ')\n')
 
-        # build the date list
-        date_list = WeatherForecast.get_date_list(self)
         array_index = 0
 
         for day in forecast:
-            current_date = str(date_list[array_index]).split(' ')[0].split('-')
+            current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
 
-            print(WeatherForecast.WEEK[date_list[array_index].weekday()] + ' - '
+            print(WeatherForecast.WEEK[self.date_list[array_index].weekday()] + ' - '
                   + WeatherForecast.MONTH[int(current_date[1]) - 1] + ' ' + str(current_date[2]) + ', '
                   + str(current_date[0]))
             print(day['weather'][0]['description'])
@@ -71,8 +72,7 @@ class WeatherForecast:
             array_index += 1
 
     def print_to_html (self, forecast):
-        # build the date list
-        date_list = WeatherForecast.get_date_list(self)
+
         array_index = 0
 
         # create the top html file content
@@ -93,10 +93,10 @@ class WeatherForecast:
 
         # build the forecast html
         for day in forecast:
-            current_date = str(date_list[array_index]).split(' ')[0].split('-')
+            current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
 
             html_str += '<li>' + \
-                        WeatherForecast.WEEK[date_list[array_index].weekday()] + \
+                        WeatherForecast.WEEK[self.date_list[array_index].weekday()] + \
                         ' - ' + WeatherForecast.MONTH[int(current_date[1]) - 1] + \
                         ' ' + str(current_date[2]) + ', ' + str(current_date[0]) + \
                         '<br>' + day['weather'][0]['description'] + '<br>' + \
@@ -111,13 +111,16 @@ class WeatherForecast:
         </html>
         """
 
+        # creating the file and writing its content
         html_file = open('forecast.html', 'w')
         html_file.write(html_str)
         html_file.close()
 
+
+
 #testing
-location0 = WeatherForecast("London, GB")
-location0.get_weather_forecast()
+#location0 = WeatherForecast(48198)
+#location0.get_weather_forecast()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")
 #WeatherForecast("London") # still fails
