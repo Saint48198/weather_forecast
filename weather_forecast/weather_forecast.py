@@ -67,7 +67,7 @@ class WeatherForecast:
 
 
     def print_to_console(self, forecast):
-        print(self.location + '(latitude: ' + str(self.latitude) + ' longitude: ' + str(self.longitude) + ')\n')
+        print(self.location + ' (latitude: ' + str(self.latitude) + ' longitude: ' + str(self.longitude) + ')\n')
 
         array_index = 0
 
@@ -205,8 +205,8 @@ class WeatherForecast:
 
 
 #testing
-location0 = WeatherForecast(48198)
-location0.get_weather_forecast()
+#location0 = WeatherForecast("London, UK")
+#location0.get_weather_forecast()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")
 #WeatherForecast("London") # still fails
