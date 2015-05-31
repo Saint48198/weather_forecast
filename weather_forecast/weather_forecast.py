@@ -12,17 +12,15 @@ class WeatherForecast:
     WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',  'Friday', 'Saturday', 'Sunday']
     MONTH = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
     ICONS = {
-        'sky is clear': 'wi-day-sunny',
-        'few clouds': 'wi-day-sunny-overcast',
-        'scattered clouds': 'wi-cloudy',
-        'broken clouds': 'wi-day-cloudy-windy',
-        'shower rain': 'wi-showers',
-        'rain': 'wi-rain',
-        'moderate rain': 'wi-rain',
-        'light rain': 'wi-sprinkle',
-        'thunderstorm': 'wi-thunderstorm',
-        'snow': 'wi-snow',
-        'mist': 'wi-sprinkle'
+        '01d': 'wi-day-sunny',
+        '02d': 'wi-cloudy',
+        '03d': 'wi-day-sunny-overcast',
+        '04d': 'wi-day-cloudy-windy',
+        '09d': 'wi-showers',
+        '10d': 'wi-rain',
+        '11d': 'wi-thunderstorm',
+        '13d': 'wi-snow',
+        '50d': 'wi-day-fog'
     }
     UNKNOWN_ICON = 'wi-alien'
 
@@ -153,8 +151,8 @@ class WeatherForecast:
         # build the forecast html
         for day in forecast:
             current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
-            icon = self.ICONS.get(day['weather'][0]['description'], self.UNKNOWN_ICON)
-            
+            icon = self.ICONS.get(day['weather'][0]['icon'], self.UNKNOWN_ICON)
+
             html_str += '<li>' + \
                         '<i class="wi ' + icon + '" title="' + day['weather'][0]['description'] + '"></i>' + \
                         '<div>' + WeatherForecast.WEEK[self.date_list[array_index].weekday()] + \
