@@ -49,7 +49,7 @@ class WeatherForecast:
             response_data = response.read()
             parse_json = json.loads(response_data)
             weather = parse_json['list']
-
+            print(weather)
             WeatherForecast.print_to_console(self, weather)
             WeatherForecast.print_to_html(self, weather)
 
@@ -119,8 +119,8 @@ class WeatherForecast:
 
 
 #testing
-#location0 = WeatherForecast(48198)
-#location0.get_weather_forecast()
+location0 = WeatherForecast(48198)
+location0.get_weather_forecast()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")
 #WeatherForecast("London") # still fails
