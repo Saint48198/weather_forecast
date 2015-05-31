@@ -11,6 +11,20 @@ class WeatherForecast:
 
     WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',  'Friday', 'Saturday', 'Sunday']
     MONTH = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+    ICONS = {
+        'sky is clear': 'wi-day-sunny',
+        'few clouds': 'wi-day-sunny-overcast',
+        'scattered clouds': 'wi-cloudy',
+        'broken clouds': 'wi-day-cloudy-windy',
+        'shower rain': 'wi-showers',
+        'rain': 'wi-rain',
+        'moderate rain': 'wi-rain',
+        'light rain': 'wi-sprinkle',
+        'thunderstorm': 'wi-thunderstorm',
+        'snow': 'wi-snow',
+        'mist': 'wi-sprinkle'
+    }
+    UNKNOWN_ICON = 'wi-alien'
 
     def __init__(self, location):
         if location:
@@ -32,7 +46,7 @@ class WeatherForecast:
 
     def get_date_list(self):
         # build the date list
-        start_day = datetime.datetime.today() #+ datetime.timedelta(days=1)
+        start_day = datetime.datetime.today()
         date_list = [start_day + datetime.timedelta(days=x) for x in range(0, 5)]
 
         return date_list
@@ -49,9 +63,9 @@ class WeatherForecast:
             response_data = response.read()
             parse_json = json.loads(response_data)
             weather = parse_json['list']
-            print(weather)
+
             WeatherForecast.print_to_console(self, weather)
-            WeatherForecast.print_to_html(self, weather)
+            WeatherForecast.output_to_html(self, weather)
 
 
     def print_to_console(self, forecast):
@@ -71,7 +85,7 @@ class WeatherForecast:
 
             array_index += 1
 
-    def print_to_html (self, forecast):
+    def output_to_html (self, forecast):
 
         array_index = 0
 
@@ -82,31 +96,105 @@ class WeatherForecast:
             <head lang="en">
             <meta charset="UTF-8">
             <title>Weather Forecast</title>
+            <!-- Latest compiled and minified Bootstrap CSS -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+            <link rel="stylesheet" href="../bower_components/weather-icons/css/weather-icons.min.css">
+            <style>
+                html, body, main, #map-canvas {
+                    height: 100%;
+                    margin: 0px;
+                    padding: 0px
+                }
+                .navbar-header {
+                    color: #fff;
+                    padding-top: 12px;
+                }
+                .container-forecast {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    left: 0;
+                    background: #fff;
+                }
+                .container-forecast ol {
+                    list-style: none;
+                    width: 80%;
+                    margin: 0 auto;
+                }
+                .container-forecast li {
+                    float: left;
+                    width: 20%;
+                    color: #666;
+                    padding: 15px 0 10px;
+                    text-align: center;
+                }
+                .container-forecast li > div {
+                    padding-top: 5px;
+                }
+                .container-forecast i {
+                    font-size: 275%;
+                }
+            </style>
         </head>
         <body>
-            <header>
+            <header class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
         """ + self.location + " (latitude: " + str(self.latitude) + " longitude: " + str(self.longitude) + ")" + """
-            </header>
-            <main>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div id="map-canvas"></div>
+            <div class="container-forecast">
                 <ol>
         """
 
         # build the forecast html
         for day in forecast:
             current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
-
+            icon = self.ICONS.get(day['weather'][0]['description'], self.UNKNOWN_ICON)
+            
             html_str += '<li>' + \
-                        WeatherForecast.WEEK[self.date_list[array_index].weekday()] + \
+                        '<i class="wi ' + icon + '" title="' + day['weather'][0]['description'] + '"></i>' + \
+                        '<div>' + WeatherForecast.WEEK[self.date_list[array_index].weekday()] + \
                         ' - ' + WeatherForecast.MONTH[int(current_date[1]) - 1] + \
-                        ' ' + str(current_date[2]) + ', ' + str(current_date[0]) + \
-                        '<br>' + day['weather'][0]['description'] + '<br>' + \
-                        'High: ' + str(day['temp']['max']) + ' Low: ' + str(day['temp']['min']) + \
-                        '</li>'
+                        ' ' + str(current_date[2]) + ', ' + str(current_date[0]) + '<br>' + \
+                        'High: ' + str(day['temp']['max']) + '&deg; Low: ' + str(day['temp']['min']) + '&deg;</div>' + \
+                        '</li>\n'
+
+            array_index += 1
 
         # end of the html content
         html_str += """
-                </ol>
+                     </ol>
+                </div>
             </main>
+            <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+            <script>
+                var map;
+                function initialize() {
+                    var myLatlng = new google.maps.LatLng(""" + str(self.latitude) + ", " +  str(self.longitude) + """ );
+                    var mapOptions = {
+                        zoom: 11,
+                        scrollwheel: false,
+                        navigationControl: false,
+                        mapTypeControl: false,
+                        scaleControl: false,
+                        draggable: false,
+                        center: myLatlng
+                    };
+                    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+                    var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        map: map,
+                        title: '""" + self.location + """'
+                    });
+                }
+
+                google.maps.event.addDomListener(window, 'load', initialize);
+
+            </script>
         </body>
         </html>
         """
