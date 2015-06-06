@@ -27,20 +27,20 @@ class WeatherForecast:
     def __init__(self, location):
         if location:
             self.location = str(location)
+
+            geolocator = Nominatim()
+            geo_location = geolocator.geocode(self.location)
+
+            self.location = geo_location.address
+
+            # get longitude and latitude
+            self.latitude = geo_location.latitude
+            self.longitude = geo_location.longitude
+
+             # build the date list
+            self.date_list = WeatherForecast.get_date_list(self)
         else:
-            self.location = input('Enter your location (Example: Ann Arbor, MI US or London, UK\n')
-
-        geolocator = Nominatim()
-        geo_location = geolocator.geocode(self.location)
-
-        self.location = geo_location.address
-
-        # get longitude and latitude
-        self.latitude = geo_location.latitude
-        self.longitude = geo_location.longitude
-
-         # build the date list
-        self.date_list = WeatherForecast.get_date_list(self)
+            print("Bad or no location provided.")
 
     def get_date_list(self):
         # build the date list
@@ -51,19 +51,22 @@ class WeatherForecast:
 
 
     def get_weather_forecast(self):
-        # create the api url
-        # using longitude and latitude conversing instead of user input name to simplify param encoding
-        api = 'http://api.openweathermap.org/data/2.5/forecast/daily?type=like&units=imperial&cnt=5&lat=' \
-              + str(self.latitude) + '&lon=' + str(self.longitude)
-        #print(api)
-        # make the api call
-        with urllib.request.urlopen(api) as response:
-            response_data = response.read()
-            parse_json = json.loads(response_data)
-            weather = parse_json['list']
+        try:
+            # create the api url
+            # using longitude and latitude conversing instead of user input name to simplify param encoding
+            api = 'http://api.openweathermap.org/data/2.5/forecast/daily?type=like&units=imperial&cnt=5&lat=' \
+                  + str(self.latitude) + '&lon=' + str(self.longitude)
+            #print(api)
+            # make the api call
+            with urllib.request.urlopen(api) as response:
+                response_data = response.read()
+                parse_json = json.loads(response_data)
+                weather = parse_json['list']
 
-            WeatherForecast.print_to_console(self, weather)
-            WeatherForecast.output_to_html(self, weather)
+                WeatherForecast.print_to_console(self, weather)
+                WeatherForecast.output_to_html(self, weather)
+        except Exception as e:
+            print(e)
 
 
     def print_to_console(self, forecast):
@@ -205,7 +208,7 @@ class WeatherForecast:
 
 
 #testing
-#location0 = WeatherForecast("London, UK")
+#location0 = WeatherForecast("Springfield")
 #location0.get_weather_forecast()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")

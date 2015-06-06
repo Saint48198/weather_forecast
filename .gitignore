@@ -1,4 +1,7 @@
 
 .idea/
 bower_components/
+
+__pycache__/
 *.pyc
+*.pyo
