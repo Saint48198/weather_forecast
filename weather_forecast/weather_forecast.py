@@ -58,23 +58,24 @@ class WeatherForecast:
                   + str(self.latitude) + '&lon=' + str(self.longitude)
             #print(api)
             # make the api call
-            with urllib.request.urlopen(api) as response:
-                response_data = response.read()
-                parse_json = json.loads(response_data)
-                weather = parse_json['list']
+            response = urllib.request.urlopen(api)
+            response_data = response.read()
+            parse_json = json.loads(response_data)
+            weather = parse_json['list']
 
-                WeatherForecast.print_to_console(self, weather)
-                WeatherForecast.output_to_html(self, weather)
+            self.weather = weather
+
+
         except Exception as e:
             print(e)
 
 
-    def print_to_console(self, forecast):
+    def print_to_console(self):
         print(self.location + ' (latitude: ' + str(self.latitude) + ' longitude: ' + str(self.longitude) + ')\n')
 
         array_index = 0
 
-        for day in forecast:
+        for day in self.weather:
             current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
 
             print(WeatherForecast.WEEK[self.date_list[array_index].weekday()] + ' - '
@@ -86,7 +87,7 @@ class WeatherForecast:
 
             array_index += 1
 
-    def output_to_html (self, forecast):
+    def output_to_html(self):
 
         array_index = 0
 
@@ -152,7 +153,7 @@ class WeatherForecast:
         """
 
         # build the forecast html
-        for day in forecast:
+        for day in self.weather:
             current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
             icon = self.ICONS.get(day['weather'][0]['icon'], self.UNKNOWN_ICON)
 
@@ -210,6 +211,7 @@ class WeatherForecast:
 #testing
 #location0 = WeatherForecast("Springfield")
 #location0.get_weather_forecast()
+#location0.print_to_console()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")
 #WeatherForecast("London") # still fails
