@@ -15,7 +15,7 @@ class TestWeatherForecast(unittest.TestCase):
         self.assertEqual(42.2681569, self.location1.latitude)
         self.assertEqual(-83.7312291, self.location1.longitude)
 
-        self.location2 = WeatherForecast("London, UK")
+        self.location2 = WeatherForecast("London")
         self.assertEqual(51.5073219, self.location2.latitude)
         self.assertEqual(-0.1276474, self.location2.longitude)
 
@@ -23,3 +23,16 @@ class TestWeatherForecast(unittest.TestCase):
         self.location0 = WeatherForecast(48198)
         days = self.location0.date_list
         self.assertEqual(5, len(days))
+
+    def test_3rd_party_api_response(self):
+        self.location0 = WeatherForecast("Springfield")
+        self.location0.get_weather_forecast()
+        self.assertEqual(5, len(self.location0.weather))
+
+        self.location1 = WeatherForecast(48198)
+        self.location1.get_weather_forecast()
+        self.assertEqual(5, len(self.location1.weather))
+
+        self.location2 = WeatherForecast("Boston, MA")
+        self.location2.get_weather_forecast()
+        self.assertEqual(5, len(self.location2.weather))
