@@ -1,11 +1,14 @@
 __author__ = 'sdaniels'
 
-import urllib.request
-import urllib.parse
-import simplejson as json
 import datetime
+import os
+import simplejson as json
+import urllib.parse
+import urllib.request
+import webbrowser
 
 from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
 
 class WeatherForecast:
 
@@ -23,22 +26,29 @@ class WeatherForecast:
         '50d': 'wi-day-fog'
     }
     UNKNOWN_ICON = 'wi-alien'
+    HTML = 'forecast.html'
 
-    def __init__(self, location):
+    def __init__(self, location=''):
         if location:
-            self.location = str(location)
+            # store user input in two variable, because self.location get over writen when geolocation works
+            user_input = str(location)
+            self.location = user_input
 
-            geolocator = Nominatim()
-            geo_location = geolocator.geocode(self.location)
+            # exception handler for the geolocation call, which can be temperamental every once in a while
+            try:
+                geolocator = Nominatim()
+                geo_location = geolocator.geocode(self.location, timeout=10)
 
-            self.location = geo_location.address
+                self.location = geo_location.address
 
-            # get longitude and latitude
-            self.latitude = geo_location.latitude
-            self.longitude = geo_location.longitude
+                # get longitude and latitude
+                self.latitude = geo_location.latitude
+                self.longitude = geo_location.longitude
 
-             # build the date list
-            self.date_list = WeatherForecast.get_date_list(self)
+                 # build the date list
+                self.date_list = WeatherForecast.get_date_list(self)
+            except GeocoderTimedOut as e:
+                print("Error: geocode failed on input %s with timeout error" % user_input)
         else:
             print("Bad or no location provided.")
 
@@ -202,16 +212,31 @@ class WeatherForecast:
         """
 
         # creating the file and writing its content
-        html_file = open('forecast.html', 'w')
+        html_file = open(self.HTML, 'w')
         html_file.write(html_str)
         html_file.close()
+
+        self.open_html()
+
+    def open_html(self, file=''):
+
+        if file:
+            url = file
+        else:
+            # used os path because simple file name did nothing
+            url = 'file://' + os.path.realpath(self.HTML)
+
+        webbrowser.open_new_tab(url)
+
 
 
 
 #testing
-#location0 = WeatherForecast("Springfield")
+#location0 = WeatherForecast(48198)
 #location0.get_weather_forecast()
-#location0.print_to_console()
+#location0.output_to_html()
+
+#location0.output_to_html()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")
 #WeatherForecast("London") # still fails
