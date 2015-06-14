@@ -176,6 +176,8 @@ class WeatherForecast:
         </header>
         <main>
         """
+
+        # generating each of the locations'  html
         location_index = 0
         for location in self.locations:
             array_index = 0
@@ -187,7 +189,7 @@ class WeatherForecast:
                         <ol>"""
 
             # build the forecast html
-            print(location)
+            #print(location)
             for day in location['forecast_data']:
                 current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
                 icon = self.ICONS.get(day['weather'][0]['icon'], self.UNKNOWN_ICON)
@@ -201,13 +203,16 @@ class WeatherForecast:
                             '</li>\n'
 
                 array_index += 1
-            location_index += 1
-        # end of the html content
-        html_str += """
-                         </ol>
-                    </div>
-                </section>
-            </main>
+
+                location_index += 1
+            # end of the location section
+            html_str += """
+                             </ol>
+                        </div>
+                    </section>"""
+
+        # generating the js for the maps
+        html_str += """</main>
             <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
             <script>
                 var map,
@@ -219,7 +224,7 @@ class WeatherForecast:
         location_index = 0
         for location in self. locations:
             html_str += """
-                myLatlng = new google.maps.LatLng(""" + str(location['latitude']) + ", " +  str(location['longitude']) + """ );
+                myLatlng = new google.maps.LatLng(""" + str(location['latitude']) + ", " + str(location['longitude']) + """ );
                 mapOptions = {
                     zoom: 11,
                     scrollwheel: false,
@@ -229,7 +234,7 @@ class WeatherForecast:
                     draggable: false,
                     center: myLatlng
                 };
-                map = new google.maps.Map(document.getElementById('map-canvas""" +  str(location_index) + """'), mapOptions);
+                map = new google.maps.Map(document.getElementById('map-canvas""" + str(location_index) + """'), mapOptions);
                 marker = new google.maps.Marker({
                     position: myLatlng,
                     map: map,
@@ -237,6 +242,7 @@ class WeatherForecast:
                 });"""
             location_index += 1
 
+        #end of the js and the html document
         html_str += """}
 
                 google.maps.event.addDomListener(window, 'load', initialize);
@@ -251,6 +257,7 @@ class WeatherForecast:
         html_file.write(html_str)
         html_file.close()
 
+        # open the file in the default browser
         self.open_html()
 
     def open_html(self, file=''):

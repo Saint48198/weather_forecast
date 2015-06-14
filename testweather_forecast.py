@@ -34,7 +34,7 @@ class TestWeatherForecast(unittest.TestCase):
     def test_multiple_locations(self):
         self.forecast0 = WeatherForecast("48198|London")
         self.assertEqual(2, len(self.forecast0.locations))
-        
+
         self.forecast0.get_weather_forecast()
         self.assertEqual(5, len(self.forecast0.locations[0]['forecast_data']))
         self.assertEqual(5, len(self.forecast0.locations[1]['forecast_data']))
