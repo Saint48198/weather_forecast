@@ -7,3 +7,4 @@ __pycache__/
 *.pyo
 
 weather_forecast/forecast.html
+forecast.html

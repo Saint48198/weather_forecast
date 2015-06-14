@@ -30,6 +30,7 @@ class WeatherForecast:
 
     def __init__(self, location=''):
         if location:
+
             # store user input in two variable, because self.location get over writen when geolocation works
             user_input = str(location)
             self.location = user_input
@@ -98,6 +99,9 @@ class WeatherForecast:
             array_index += 1
 
     def output_to_html(self):
+
+        if os.path.isfile(self.HTML):
+            os.remove(self.HTML)
 
         array_index = 0
 
@@ -232,9 +236,9 @@ class WeatherForecast:
 
 
 #testing
-#location0 = WeatherForecast(48198)
-#location0.get_weather_forecast()
-#location0.output_to_html()
+location0 = WeatherForecast(48198)
+location0.get_weather_forecast()
+location0.output_to_html()
 
 #location0.output_to_html()
 #print(location0.longitude)
