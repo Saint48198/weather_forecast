@@ -30,21 +30,26 @@ class WeatherForecast:
 
     def __init__(self, location=''):
         if location:
-
-            # store user input in two variable, because self.location get over writen when geolocation works
             user_input = str(location)
-            self.location = user_input
+            user_input_array = user_input.split('|')
+
+            self.locations = list()
 
             # exception handler for the geolocation call, which can be temperamental every once in a while
             try:
                 geolocator = Nominatim()
-                geo_location = geolocator.geocode(self.location, timeout=10)
 
-                self.location = geo_location.address
+                for input_value in user_input_array:
 
-                # get longitude and latitude
-                self.latitude = geo_location.latitude
-                self.longitude = geo_location.longitude
+                    geo_location = geolocator.geocode(input_value, timeout=10)
+
+                    self.locations.append({
+                        'input': input_value,
+                        'geo_location': geo_location,
+                        'display_location': geo_location.address,
+                        'latitude': geo_location.latitude,
+                        'longitude': geo_location.longitude
+                    })
 
                  # build the date list
                 self.date_list = WeatherForecast.get_date_list(self)
@@ -63,18 +68,20 @@ class WeatherForecast:
 
     def get_weather_forecast(self):
         try:
-            # create the api url
-            # using longitude and latitude conversing instead of user input name to simplify param encoding
-            api = 'http://api.openweathermap.org/data/2.5/forecast/daily?type=like&units=imperial&cnt=5&lat=' \
-                  + str(self.latitude) + '&lon=' + str(self.longitude)
-            #print(api)
-            # make the api call
-            response = urllib.request.urlopen(api)
-            response_data = response.read()
-            parse_json = json.loads(response_data)
-            weather = parse_json['list']
 
-            self.weather = weather
+            for location in self.locations:
+                # create the api url
+                # using longitude and latitude conversing instead of user input name to simplify param encoding
+                api = 'http://api.openweathermap.org/data/2.5/forecast/daily?type=like&units=imperial&cnt=5&lat=' \
+                      + str(location['latitude']) + '&lon=' + str(location['longitude'])
+
+                # make the api call
+                response = urllib.request.urlopen(api)
+                response_data = response.read()
+                parse_json = json.loads(response_data)
+
+                # set location weather data
+                location['forecast_data'] = parse_json['list']
 
 
         except Exception as e:
@@ -82,24 +89,30 @@ class WeatherForecast:
 
 
     def print_to_console(self):
-        print(self.location + ' (latitude: ' + str(self.latitude) + ' longitude: ' + str(self.longitude) + ')\n')
 
-        array_index = 0
+        for location in self.locations:
 
-        for day in self.weather:
-            current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
+            print(location['display_location'] + ' (latitude: ' + str(location['latitude']) + ' longitude: ' + str(location['longitude']) + ')\n')
 
-            print(WeatherForecast.WEEK[self.date_list[array_index].weekday()] + ' - '
-                  + WeatherForecast.MONTH[int(current_date[1]) - 1] + ' ' + str(current_date[2]) + ', '
-                  + str(current_date[0]))
-            print(day['weather'][0]['description'])
-            print('High: ' + str(day['temp']['max']) + ' Low: ' + str(day['temp']['min']))
-            print('--------------------------------------------------')
+            array_index = 0
 
-            array_index += 1
+            for day in location['forecast_data']:
+                current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
+
+                print(WeatherForecast.WEEK[self.date_list[array_index].weekday()] + ' - '
+                      + WeatherForecast.MONTH[int(current_date[1]) - 1] + ' ' + str(current_date[2]) + ', '
+                      + str(current_date[0]))
+                print(day['weather'][0]['description'])
+                print('High: ' + str(day['temp']['max']) + ' Low: ' + str(day['temp']['min']))
+                print('--------------------------------------------------')
+
+                array_index += 1
+
+            print('--------------------------------------------------\n\n')
 
     def output_to_html(self):
 
+        # remove the old html file, if there is one
         if os.path.isfile(self.HTML):
             os.remove(self.HTML)
 
@@ -236,9 +249,10 @@ class WeatherForecast:
 
 
 #testing
-location0 = WeatherForecast(48198)
-location0.get_weather_forecast()
-location0.output_to_html()
+# forecast0 = WeatherForecast("48198|London,UK")
+# forecast0.get_weather_forecast()
+# forecast0.print_to_console()
+#location0.output_to_html()
 
 #location0.output_to_html()
 #print(location0.longitude)
