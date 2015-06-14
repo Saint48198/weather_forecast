@@ -110,13 +110,12 @@ class WeatherForecast:
 
             print('--------------------------------------------------\n\n')
 
+
     def output_to_html(self):
 
         # remove the old html file, if there is one
         if os.path.isfile(self.HTML):
             os.remove(self.HTML)
-
-        array_index = 0
 
         # create the top html file content
         html_str = """
@@ -129,20 +128,21 @@ class WeatherForecast:
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
             <link rel="stylesheet" href="../bower_components/weather-icons/css/weather-icons.min.css">
             <style>
-                html, body, main, #map-canvas {
+                html, body, main {
                     height: 100%;
                     margin: 0px;
                     padding: 0px
+                }
+                .map {
+                    width: 100%;
+                    height: 150px;
                 }
                 .navbar-header {
                     color: #fff;
                     padding-top: 12px;
                 }
                 .container-forecast {
-                    position: absolute;
-                    bottom: 0;
-                    right: 0;
-                    left: 0;
+                    width: 100%;
                     background: #fff;
                 }
                 .container-forecast ol {
@@ -169,57 +169,75 @@ class WeatherForecast:
             <header class="navbar navbar-inverse navbar-fixed-top">
                 <div class="container">
                     <div class="navbar-header">
-        """ + self.location + " (latitude: " + str(self.latitude) + " longitude: " + str(self.longitude) + ")" + """
+                    Weather Forecast
+                    </div>
                 </div>
             </div>
         </header>
         <main>
-            <div id="map-canvas"></div>
-            <div class="container-forecast">
-                <ol>
         """
+        location_index = 0
+        for location in self.locations:
+            array_index = 0
+            html_str += """
+                <section>
+                    <h1>""" + location['display_location'] + " (latitude: " + str(self.locations[0]['latitude']) + " longitude: " + str(self.locations[0]['longitude']) + ")" + """</h1>
+                     <div id="map-canvas""" + str(location_index) + """" class="map"></div>
+                     <div class="container-forecast">
+                        <ol>"""
 
-        # build the forecast html
-        for day in self.weather:
-            current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
-            icon = self.ICONS.get(day['weather'][0]['icon'], self.UNKNOWN_ICON)
+            # build the forecast html
+            print(location)
+            for day in location['forecast_data']:
+                current_date = str(self.date_list[array_index]).split(' ')[0].split('-')
+                icon = self.ICONS.get(day['weather'][0]['icon'], self.UNKNOWN_ICON)
 
-            html_str += '<li>' + \
-                        '<i class="wi ' + icon + '" title="' + day['weather'][0]['description'] + '"></i>' + \
-                        '<div>' + WeatherForecast.WEEK[self.date_list[array_index].weekday()] + \
-                        ' - ' + WeatherForecast.MONTH[int(current_date[1]) - 1] + \
-                        ' ' + str(current_date[2]) + ', ' + str(current_date[0]) + '<br>' + \
-                        'High: ' + str(day['temp']['max']) + '&deg; Low: ' + str(day['temp']['min']) + '&deg;</div>' + \
-                        '</li>\n'
+                html_str += '<li>' + \
+                            '<i class="wi ' + icon + '" title="' + day['weather'][0]['description'] + '"></i>' + \
+                            '<div>' + WeatherForecast.WEEK[self.date_list[array_index].weekday()] + \
+                            ' - ' + WeatherForecast.MONTH[int(current_date[1]) - 1] + \
+                            ' ' + str(current_date[2]) + ', ' + str(current_date[0]) + '<br>' + \
+                            'High: ' + str(day['temp']['max']) + '&deg; Low: ' + str(day['temp']['min']) + '&deg;</div>' + \
+                            '</li>\n'
 
-            array_index += 1
-
+                array_index += 1
+            location_index += 1
         # end of the html content
         html_str += """
-                     </ol>
-                </div>
+                         </ol>
+                    </div>
+                </section>
             </main>
             <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
             <script>
-                var map;
-                function initialize() {
-                    var myLatlng = new google.maps.LatLng(""" + str(self.latitude) + ", " +  str(self.longitude) + """ );
-                    var mapOptions = {
-                        zoom: 11,
-                        scrollwheel: false,
-                        navigationControl: false,
-                        mapTypeControl: false,
-                        scaleControl: false,
-                        draggable: false,
-                        center: myLatlng
-                    };
-                    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-                    var marker = new google.maps.Marker({
-                        position: myLatlng,
-                        map: map,
-                        title: '""" + self.location + """'
-                    });
-                }
+                var map,
+                    myLatlng,
+                    mapOptions,
+                    marker;
+                function initialize() { """
+
+        location_index = 0
+        for location in self. locations:
+            html_str += """
+                myLatlng = new google.maps.LatLng(""" + str(location['latitude']) + ", " +  str(location['longitude']) + """ );
+                mapOptions = {
+                    zoom: 11,
+                    scrollwheel: false,
+                    navigationControl: false,
+                    mapTypeControl: false,
+                    scaleControl: false,
+                    draggable: false,
+                    center: myLatlng
+                };
+                map = new google.maps.Map(document.getElementById('map-canvas""" +  str(location_index) + """'), mapOptions);
+                marker = new google.maps.Marker({
+                    position: myLatlng,
+                    map: map,
+                    title: '""" + location['display_location'] + """'
+                });"""
+            location_index += 1
+
+        html_str += """}
 
                 google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -249,13 +267,13 @@ class WeatherForecast:
 
 
 #testing
-# forecast0 = WeatherForecast("48198|London,UK")
-# forecast0.get_weather_forecast()
-# forecast0.print_to_console()
-#location0.output_to_html()
+#forecast0 = WeatherForecast("48198")
+#forecast0.get_weather_forecast()
+#forecast0.print_to_console()
+#forecast0.output_to_html()
 
 #location0.output_to_html()
 #print(location0.longitude)
 #WeatherForecast("Ann Arbor, MI")
-#WeatherForecast("London") # still fails
+#WeatherForecast("London")
 #WeatherForecast()
