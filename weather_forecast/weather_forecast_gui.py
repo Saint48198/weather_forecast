@@ -16,7 +16,7 @@ class WeatherForecastGUI(tkinter.Tk):
     def initialize(self):
         self.grid()
 
-        entry_label = tkinter.Label(self, anchor="w", text='Enter Location(s) (Example: Ann Arbor, MI; London; 48198 and etc.)')
+        entry_label = tkinter.Label(self, anchor="w", text='Enter one of more location(s) Mulitple locations are pipe delimited. (Example: Ann Arbor, MI; London; 48198 and 49221|Springfield)')
         entry_label.grid(column=0,row=1)
 
         self.entry = tkinter.Entry(self)

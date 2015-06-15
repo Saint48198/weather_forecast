@@ -133,6 +133,17 @@ class WeatherForecast:
                     margin: 0px;
                     padding: 0px
                 }
+                main {
+                    padding: 50px 0 0;
+                }
+                section {
+                    clear: both;
+                }
+                section h1 {
+                    padding: 0 10px;
+                    font-size: 20px;
+                    text-align: center;
+                }
                 .map {
                     width: 100%;
                     height: 150px;
@@ -154,7 +165,7 @@ class WeatherForecast:
                     float: left;
                     width: 20%;
                     color: #666;
-                    padding: 15px 0 10px;
+                    padding: 15px 0 35px;
                     text-align: center;
                 }
                 .container-forecast li > div {
@@ -204,7 +215,7 @@ class WeatherForecast:
 
                 array_index += 1
 
-                location_index += 1
+            location_index += 1
             # end of the location section
             html_str += """
                              </ol>
@@ -222,7 +233,7 @@ class WeatherForecast:
                 function initialize() { """
 
         location_index = 0
-        for location in self. locations:
+        for location in self.locations:
             html_str += """
                 myLatlng = new google.maps.LatLng(""" + str(location['latitude']) + ", " + str(location['longitude']) + """ );
                 mapOptions = {
@@ -274,7 +285,7 @@ class WeatherForecast:
 
 
 #testing
-#forecast0 = WeatherForecast("48198")
+#forecast0 = WeatherForecast("48198| Ann Arbor, MI")
 #forecast0.get_weather_forecast()
 #forecast0.print_to_console()
 #forecast0.output_to_html()
