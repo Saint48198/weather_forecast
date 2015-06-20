@@ -15,12 +15,21 @@ class WeatherForecastGUI(tkinter.Tk):
 
     def initialize(self):
         self.grid()
+        self.grid_columnconfigure(0, weight=1)
 
-        entry_label = tkinter.Label(self, anchor="w", text='Enter one of more location(s) Mulitple locations are pipe delimited. (Example: Ann Arbor, MI; London; 48198 and 49221|Springfield)')
-        entry_label.grid(column=0,row=1)
+        # create the location input label
+        entry_label = tkinter.Label(self,
+                                    anchor="w",
+                                    justify="left",
+                                    text='Enter one of more location(s)\nMulitple '
+                                         'locations are pipe delimited. (Example: Ann Arbor, MI; London; '
+                                           '48198 and 49221|Springfield)')
+        # place the label on the grid
+        entry_label.grid(column=0, columnspan=2,row=1)
 
+        # create and place the location input
         self.entry = tkinter.Entry(self)
-        self.entry.grid(column=0, columnspan=2, row=2,sticky='EW')
+        self.entry.grid(column=0, columnspan=2, row=2, sticky='EW')
 
 
         # print_to_console/output_to_html_bool are BooleanVars initialized False
@@ -29,19 +38,23 @@ class WeatherForecastGUI(tkinter.Tk):
         self.print_to_console_bool.set(False)
         self.output_to_html_bool.set(False)
 
+        # create the checkboxes for output types
         print_to_console_box = tkinter.Checkbutton \
             (self, text="Print to Console", variable=self.print_to_console_bool,onvalue=1, offvalue=0)
         output_to_html_box = tkinter.Checkbutton \
             (self, text="Output to HTML", variable=self.output_to_html_bool,onvalue=1, offvalue=0)
 
-        print_to_console_box.grid(column=0, row=3)
-        output_to_html_box.grid(column=0, row=4)
+        # place the checkboxes on the grid
+        print_to_console_box.grid(column=0, columnspan=2, row=3)
+        output_to_html_box.grid(column=0, columnspan=2, row=4)
 
-        ok_button = tkinter.Button(self, text="Get Forecast", command=self.getForecast)
-        ok_button.grid(column=0,row=6)
+        # create and place the ok buton on the grid
+        ok_button = tkinter.Button(self, text="Get Forecast", width=50, command=self.getForecast)
+        ok_button.grid(column=0, row=6, sticky='W')
 
-        cancel_button = tkinter.Button(self, text="Cancel", command=self.close)
-        cancel_button.grid(column=1,row=6)
+        # create and place the cancel button on the grid
+        cancel_button = tkinter.Button(self, text="Cancel", width=50, command=self.close)
+        cancel_button.grid(column=1, row=6, sticky='W')
 
         self.grid_columnconfigure(0,weight=1)
 
