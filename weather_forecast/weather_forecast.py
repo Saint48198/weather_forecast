@@ -11,9 +11,18 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 
 class WeatherForecast:
+    '''
+        CLASS for creating a Weather Forecast service.
+        The feature gets user input if the form of zip, city, city/state or city/country of location
+        to determine the longitude/latitude of each location. Once the longitude/latitude is determined then the
+        a call is made to the OpenWeatherMap.org API to get weather data for each location. The weather forecast can
+        be output to the console to a web page which is opened in the user's default browser.
+    '''
 
     WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',  'Friday', 'Saturday', 'Sunday']
     MONTH = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JULY', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+    # key references icon value returned by API call data
+    # value references icon value in weather-icons css
     ICONS = {
         '01d': 'wi-day-sunny',
         '02d': 'wi-cloudy',
@@ -25,12 +34,14 @@ class WeatherForecast:
         '13d': 'wi-snow',
         '50d': 'wi-day-fog'
     }
+    # fallback css icon
     UNKNOWN_ICON = 'wi-alien'
     HTML = 'forecast.html'
 
     def __init__(self, location=''):
         if location:
             user_input = str(location)
+            # string separator for locations
             user_input_array = user_input.split('|')
 
             self.locations = list()
@@ -38,9 +49,8 @@ class WeatherForecast:
             # exception handler for the geolocation call, which can be temperamental every once in a while
             try:
                 geolocator = Nominatim()
-
+                # loop threw each user entered location
                 for input_value in user_input_array:
-
                     geo_location = geolocator.geocode(input_value, timeout=10)
 
                     self.locations.append({
@@ -280,18 +290,3 @@ class WeatherForecast:
             url = 'file://' + os.path.realpath(self.HTML)
 
         webbrowser.open_new_tab(url)
-
-
-
-
-#testing
-#forecast0 = WeatherForecast("48198| Ann Arbor, MI")
-#forecast0.get_weather_forecast()
-#forecast0.print_to_console()
-#forecast0.output_to_html()
-
-#location0.output_to_html()
-#print(location0.longitude)
-#WeatherForecast("Ann Arbor, MI")
-#WeatherForecast("London")
-#WeatherForecast()

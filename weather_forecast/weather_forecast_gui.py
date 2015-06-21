@@ -3,9 +3,15 @@ __author__ = 'sdaniels'
 from tkinter import *
 from tkinter import ttk
 
-from weather_forecast import WeatherForecast
+from weather_forecast import *
 
 class WeatherForecastGUI(Tk):
+    '''
+    CLASS creates GUI for Weather Forecast that allows users to enter in one or more locations
+    and select the type of output of the weather forecast (console, html or both)
+    '''
+
+
     # GUI Window title
     WINDOW_TITLE = "Weather Forecaster"
 
